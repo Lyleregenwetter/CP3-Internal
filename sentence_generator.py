@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import random
+from scipy.spatial import distance
 
 def generate_random_sentence():
     adjectives = ["", " futuristic", " antique", " old-fashioned", " ordinary", " hideous", " expensive", " elegant", " cheap", " sturdy", " unconventional", " comfy"]
@@ -39,49 +40,27 @@ def generate_random_sentence():
     sentence = sentence + "."
     return sentence
 
+def load_named_colors(file_path):
+    colors = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            name, hex_code = line.strip().split('\t')
+            rgb = tuple(int(hex_code[i:i+2], 16) for i in (1, 3, 5))  # Convert hex to RGB
+            colors[name] = rgb
+    return colors
 
-
-def describe_color(red, green, blue):
-    # Calculate total intensity to create ratios
-    total = red + green + blue
-    if total == 0:
-        return "black"  # If all channels are zero, it's black
-
-    # Calculate ratios for each color component
-    red_ratio = red / total
-    green_ratio = green / total
-    blue_ratio = blue / total
-
-    # Define color based on dominance and combinations of ratios
-    if red_ratio > 0.5 and green_ratio < 0.2 and blue_ratio < 0.2:
-        return f"{np.random.choice(['vivid', 'fiery', 'intense', 'deep', 'radiant'])} red"
-    elif green_ratio > 0.5 and red_ratio < 0.2 and blue_ratio < 0.2:
-        return f"{np.random.choice(['bright', 'lush', 'vibrant', 'emerald', 'fresh'])} green"
-    elif blue_ratio > 0.5 and red_ratio < 0.2 and green_ratio < 0.2:
-        return f"{np.random.choice(['deep', 'cool', 'calm', 'rich', 'bold'])} blue"
-    elif red_ratio > 0.4 and blue_ratio > 0.4 and green_ratio < 0.2:
-        return f"{np.random.choice(['rich', 'royal', 'deep', 'vibrant', 'mystical'])} purple"
-    elif red_ratio > 0.4 and green_ratio > 0.4 and blue_ratio < 0.2:
-        return f"{np.random.choice(['vibrant', 'sunny', 'golden', 'bright', 'luminous'])} yellow"
-    elif blue_ratio > 0.4 and green_ratio > 0.4 and red_ratio < 0.2:
-        return f"{np.random.choice(['striking', 'cool', 'vibrant', 'refreshing', 'crisp'])} cyan"
-    elif red_ratio > 0.4 and blue_ratio > 0.2 and green_ratio < 0.2:
-        return f"{np.random.choice(['bold', 'striking', 'vivid', 'electric', 'rich'])} magenta"
-    elif red_ratio > 0.4 and green_ratio > 0.2 and blue_ratio > 0.2:
-        return f"{np.random.choice(['soft', 'bright', 'playful', 'delicate', 'lively'])} pink"
-    elif red_ratio > 0.3 and green_ratio > 0.3 and blue_ratio > 0.3:
-        return f"{np.random.choice(['neutral', 'pristine', 'elegant', 'bright', 'pure'])} white" if total > 500 else f"{np.random.choice(['balanced', 'sleek', 'modern', 'subtle', 'refined'])} gray"
-    else:
-        # Fallback to the most dominant color if no strong match
-        dominant_color = max((red, 'red'), (green, 'green'), (blue, 'blue'))[1]
-        color_descriptions = {
-            'red': ["vivid", "fiery", "intense", "deep", "radiant"],
-            'green': ["bright", "lush", "vibrant", "emerald", "fresh"],
-            'blue': ["deep", "cool", "calm", "rich", "bold"]
-        }
-        return f"{np.random.choice(color_descriptions[dominant_color])} {dominant_color}"
-
-
+def nearest_named_color(r, g, b, colors):
+    target_rgb = (r, g, b)
+    nearest_color = None
+    min_distance = float('inf')
+    
+    for name, rgb in colors.items():
+        dist = distance.euclidean(target_rgb, rgb)
+        if dist < min_distance:
+            min_distance = dist
+            nearest_color = name
+            
+    return nearest_color
 
 
 def generate_bike_name():
@@ -196,7 +175,7 @@ def generate_wheel_description(df_slice, probabilities):
     return None
 
 
-def generate_description(df_slice):
+def generate_description(df_slice, colors):
     # Consolidated probabilities for adding each type of feature
     probabilities = {
         "color": 0.9,
@@ -219,7 +198,7 @@ def generate_description(df_slice):
     red_rgb = df_slice["FIRST color R_RGB"]
     green_rgb = df_slice["FIRST color G_RGB"]
     blue_rgb = df_slice["FIRST color B_RGB"]
-    color_desc = describe_color(red_rgb, green_rgb, blue_rgb) + " "
+    color_desc = nearest_named_color(red_rgb, green_rgb, blue_rgb, colors) + " "
     if np.random.rand() < 1 - probabilities["color"]:  # Adjust based on probability
         color_desc = ""
 
