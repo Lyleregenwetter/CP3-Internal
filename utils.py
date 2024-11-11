@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
 
 def load_data(split="train"):
     """
@@ -40,6 +41,60 @@ def load_data(split="train"):
 
     return masked_images, masks, parametric, description, images
 
+
+def compute_residual_images(img_set1, img_set2):
+    #convert to float   
+    img_set1 = img_set1.astype(np.float32)
+    img_set2 = img_set2.astype(np.float32)
+    # Ensure the shapes match
+    assert img_set1.shape == img_set2.shape, "Image sets must have the same dimensions"
+    
+    # Compute the residuals
+    residuals = np.abs(img_set1 - img_set2)
+    return residuals
+
+def calculate_error(img_set1, img_set2):
+    residuals = compute_residual_images(img_set1, img_set2)
+    error = np.mean(residuals)/255
+    return error
+
+# Function to visualize original images and their residuals
+def display_images_residual(img_set1, img_set2):
+    residuals = compute_residual_images(img_set1, img_set2)
+    print(np.max(residuals))
+    errors = np.mean(residuals, axis=(1, 2, 3))/255
+    residuals = (255-residuals)/255    
+
+    num_images = len(img_set1)
+
+    plt.figure(figsize=(10, num_images * 3))
+    
+    for i in range(num_images):
+        # Transpose the images to (height, width, channels)
+        img1 = np.transpose(img_set1[i], (1, 2, 0))
+        img2 = np.transpose(img_set2[i], (1, 2, 0))
+        residual = np.transpose(residuals[i], (1, 2, 0))
+        
+        # Display images from the first set
+        plt.subplot(num_images, 3, i * 3 + 1)
+        plt.imshow(img1)
+        plt.title("Image Set 1")
+        plt.axis("off")
+        
+        # Display images from the second set
+        plt.subplot(num_images, 3, i * 3 + 2)
+        plt.imshow(img2)
+        plt.title("Image Set 2")
+        plt.axis("off")
+        
+        # Display residual images
+        plt.subplot(num_images, 3, i * 3 + 3)
+        plt.imshow(residual)
+        plt.title(f"Error: {errors[i]:.4f}")
+        plt.axis("off")
+    
+    plt.tight_layout()
+    plt.show()
 
 def apply_random_mask(images, minimum_proportion=0.4, maximum_proportion=0.8):
     """
