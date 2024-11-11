@@ -221,8 +221,8 @@ def generate_description(df_slice):
         color_desc = ""
 
     # Fender logic
-    front_fender = df_slice["Front Fender include"] == 1
-    rear_fender = df_slice["Rear Fender include"] == 1
+    front_fender = df_slice["Front Fender include"] >= 0.5
+    rear_fender = df_slice["Rear Fender include"] >= 0.5
 
     if np.random.rand() < probabilities["fenders"]:
         if front_fender and rear_fender:
@@ -233,7 +233,7 @@ def generate_description(df_slice):
             potential_features.append("a rear fender for trail comfort")
 
     # Aerobars logic
-    display_aerobars = df_slice["Display AEROBARS"] == 1
+    display_aerobars = df_slice["Display AEROBARS"] >= 0.5
     if display_aerobars and np.random.rand() < probabilities["aerobars"]:
         aerobar_descriptions = [
             "a set of aerodynamic bars", 
@@ -246,7 +246,7 @@ def generate_description(df_slice):
         potential_features.append(np.random.choice(aerobar_descriptions))
 
     # Cargo rack logic
-    display_rack = df_slice["Display RACK"] == 1
+    display_rack = df_slice["Display RACK"] >= 0.5
     if display_rack and np.random.rand() < probabilities["cargo_rack"]:
         cargo_rack_descriptions = [
             "a cargo rack for extra storage", 
