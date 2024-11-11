@@ -133,8 +133,11 @@ def generate_bike_name():
     
     return bike_name
 
-
 def generate_wheel_description(df_slice, probabilities):
+    # Helper function to determine "a" or "an"
+    def get_article(word):
+        return "an" if word and word[0].lower() in "aeiou" else "a"
+    
     # Wheel adjectives
     wheel_adjectives_1 = ["", "aerodynamic ", "sleek ", "futuristic ", "lightweight ", "precision-engineered ", "optimized "]
     wheel_adjectives_2 = ["", "carbon-fiber ", "race-optimized ", "high-performance "]
@@ -160,6 +163,7 @@ def generate_wheel_description(df_slice, probabilities):
 
     # Construct wheel prefix
     wheel_prefix = str(np.random.choice(wheel_adjectives_1)) + str(np.random.choice(wheel_adjectives_2))
+    article = get_article(wheel_prefix)
 
     # Handle combinations of front and rear wheel styles, omitting spoked-only setups
     if rim_style_front == "spoked" and rim_style_rear == "spoked":
@@ -172,25 +176,24 @@ def generate_wheel_description(df_slice, probabilities):
         return f"{wheel_prefix}disc wheels"
 
     elif rim_style_front == "trispoke" and rim_style_rear == "disc":
-        return f"{wheel_prefix}{spoke_descriptor_front}composite-spoke front wheel and disc rear wheel"
+        return f"{article} {wheel_prefix}{spoke_descriptor_front}composite-spoke front wheel and {article} {wheel_prefix}disc rear wheel"
 
     elif rim_style_front == "disc" and rim_style_rear == "trispoke":
-        return f"{wheel_prefix}disc front wheel and tri-spoked composite-spoke rear wheel"
+        return f"{article} {wheel_prefix}disc front wheel and {article} {wheel_prefix}tri-spoked composite-spoke rear wheel"
 
     elif rim_style_front == "trispoke" and rim_style_rear == "spoked":
-        return f"{wheel_prefix}{spoke_descriptor_front}composite-spoke front wheel"
+        return f"{article} {wheel_prefix}{spoke_descriptor_front}composite-spoke front wheel"
 
     elif rim_style_front == "disc" and rim_style_rear == "spoked":
-        return f"{wheel_prefix}disc front wheel"
+        return f"{article} {wheel_prefix}disc front wheel"
 
     elif rim_style_front == "spoked" and rim_style_rear == "trispoke":
-        return f"{wheel_prefix}tri-spoked composite-spoke rear wheel"
+        return f"{article} {wheel_prefix}tri-spoked composite-spoke rear wheel"
 
     elif rim_style_front == "spoked" and rim_style_rear == "disc":
-        return f"{wheel_prefix}disc rear wheel"
+        return f"{article} {wheel_prefix}disc rear wheel"
 
     return None
-
 
 
 def generate_description(df_slice):

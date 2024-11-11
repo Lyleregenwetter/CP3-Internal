@@ -29,7 +29,7 @@ def load_data(split="train"):
         images = np.concatenate(images, axis=0)
     else:
         masked_images = np.load(f"data/masked_test.npy")
-        images = np.load(f"data/images_test.npy")
+        images = None
 
     description = pickle.load(open(f"data/desc_{split}.pkl", "rb"))
 
