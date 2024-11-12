@@ -45,6 +45,7 @@ def load_named_colors(file_path):
     with open(file_path, 'r') as file:
         for line in file:
             name, hex_code = line.strip().split('\t')
+            name = name.replace(" ", "-")  # Replace spaces with hyphens
             rgb = tuple(int(hex_code[i:i+2], 16) for i in (1, 3, 5))  # Convert hex to RGB
             colors[name] = rgb
     return colors
@@ -72,13 +73,13 @@ def generate_bike_name():
         "Blaze", "Phoenix", "Comet", "Challenger", "Fusion", "Patriot", "Pioneer",
         "Voyager", "Inferno", "Jet", "Rogue", "Cyclone", "Whirlwind", "Zenith",
         "Trek", "Ascend", "Forge", "Thunderbolt", "Flash", "Tempest", "Guardian",
-        "Hunter", "Arrow", "Champion", "Mariner", "Navigator", "Titanium", "Forge",
+        "Hunter", "Arrow", "Champion", "Mariner", "Navigator", "Titan", "Forge",
         "Aurora", "Voyage", "Sentinel", "Frontier", "Pulse", "Stormrider", "Vanguard",
         "Raider", "Apex", "Rocket", "Force", "Voyageur", "Outlander", "Hero",
         "Trailblazer", "Adventurer", "Wildcat", "Phantom", "Sonic", "Dominator",
         "Nomad", "Bravo", "Ironclad", "Patron", "Pilot", "Harbinger", "Enigma",
         "Saber", "Nebula", "Prophet", "Conqueror", "Magnum", "Tornado", "Blitz",
-        "Shifter", "Impulse", "Scorpion", "Interceptor", "Titanium Viper"
+        "Shifter", "Impulse", "Scorpion", "Interceptor", "Viper"
     ]
     
     suffixes = [
@@ -370,7 +371,7 @@ def generate_description(df_slice, colors):
         f"{bike_intro} {prefixes} {feature_list} for unmatched cycling performance.",
         f"{prefixing} {feature_list}, {bike_intro} is the ultimate machine for your next ride.",
         f"{prefixing} {feature_list}, {bike_intro} is ready to take on any challenge.",
-        f"With {feature_list}, {bike_intro} sets a new standard in cycling.",
+        f"{prefixing} {feature_list}, {bike_intro} sets a new standard in cycling.",
         f"Unleash your inner power with {bike_intro}, {prefixing} {feature_list}.",
         f"Get ready for your best ride yet with {bike_intro}, {prefixing} {feature_list}.",
         f"{prefixing} {feature_list}, {bike_intro} promises unparalleled performance.",
@@ -382,19 +383,19 @@ def generate_description(df_slice, colors):
         f"Redefine your cycling experience with {bike_intro}, {prefixing} {feature_list}.",
         f"Elevate your journey with {bike_intro}, {prefixing} {feature_list}.",
         f"Perfect for enthusiasts, {bike_intro} {prefixes} {feature_list}.",
-        f"Reach new heights with {bike_intro} {prefixing} {feature_list}.",
+        f"Reach new heights with {bike_intro}, {prefixing} {feature_list}.",
         f"Designed to impress, {bike_intro} {prefixes} {feature_list} for all your adventures.",
-        f"Discover the freedom of cycling with {bike_intro} {prefixing} {feature_list}.",
+        f"Discover the freedom of cycling with {bike_intro}, {prefixing} {feature_list}.",
         f"{bike_intro} {prefixes} {feature_list}, perfect for those who demand quality and style.",
         f"{prefixing} {feature_list}, {bike_intro} will redefine your cycling experience.",
-        f"Push the limits of your ride with {bike_intro} {prefixing} {feature_list}.",
+        f"Push the limits of your ride with {bike_intro}, {prefixing} {feature_list}.",
         f"Transform your rides with {bike_intro}, {prefixing} {feature_list}.",
         f"Built for champions, {bike_intro} {prefixes} {feature_list} for peak performance.",
         f"{bike_intro} {prefixes} {feature_list}, combining innovation and reliability.",
         f"{prefixing} {feature_list}, {bike_intro} delivers unparalleled comfort and control.",
-        f"With {feature_list}, {bike_intro} turns every ride into an adventure.",
+        f"{prefixing} {feature_list}, {bike_intro} turns every ride into an adventure.",
         f"{bike_intro} {prefixes} {feature_list} to take your cycling further.",
-        f"{bike_intro} is made {prefixes} {feature_list} to ensure an unforgettable ride.",
+        f"{bike_intro} {prefixes} {feature_list} to ensure an unforgettable ride.",
         f"{bike_intro}, {prefixing} {feature_list}, is crafted to exceed your expectations.",
         f"Enjoy every mile with {bike_intro}, {prefixing} {feature_list} for superior handling.",
         f"{prefixing} {feature_list}, {bike_intro} stands out from the competition.",

@@ -18,13 +18,13 @@ def load_data(split="train"):
     """
     masked_images = []
     if split == "train":
-        for i in range(10):
+        for i in range(5):
             masked_im_slice = np.load(f"data/masked_train_{i}.npy")
             masked_images.append(masked_im_slice)
         masked_images = np.concatenate(masked_images, axis=0)
 
         images = []
-        for i in range(10):
+        for i in range(5):
             im_slice = np.load(f"data/images_train_{i}.npy")
             images.append(im_slice)
         images = np.concatenate(images, axis=0)
@@ -61,7 +61,6 @@ def calculate_error(img_set1, img_set2):
 # Function to visualize original images and their residuals
 def display_images_residual(img_set1, img_set2):
     residuals = compute_residual_images(img_set1, img_set2)
-    print(np.max(residuals))
     errors = np.mean(residuals, axis=(1, 2, 3))/255
     residuals = (255-residuals)/255    
 
@@ -140,7 +139,7 @@ def apply_random_mask(images, minimum_proportion=0.4, maximum_proportion=0.8):
     
     return masked_images, mask_coordinates
 
-def mask_array_with_nan(arr, fraction=0.7):
+def mask_array_with_nan(arr, fraction=0.5):
     """
     Randomly mask a fraction of values in an array with NaN.
 
@@ -162,3 +161,20 @@ def mask_array_with_nan(arr, fraction=0.7):
     masked_arr.flat[flat_indices] = np.nan
     
     return masked_arr
+
+def generate_random_id():
+    #3 random 4 digit numbers separated by underscores
+    n1 = np.random.randint(1e3, 1e4-1)
+    n2 = np.random.randint(1e3, 1e4-1)
+    n3 = np.random.randint(1e3, 1e4-1)
+    return f"{n1}_{n2}_{n3}"
+
+def validate_submission(final_submission):
+    assert final_submission.dtype == np.uint8
+    assert final_submission.shape == (1000, 3, 80, 128)
+    minimum_val = np.min(final_submission)
+    maximum_val = np.max(final_submission)
+    if maximum_val<200 or minimum_val<0 or maximum_val>255:
+        print(f"Warning: Your submission appears to be scaled between {minimum_val} and {maximum_val}. We expect the data to be scaled between 0-255. Are you sure everything is right?")
+    else:
+        print("Submission looks good!")
