@@ -1,6 +1,8 @@
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
+from torchmetrics import StructuralSimilarityIndexMeasure
+import torch
 
 def load_data(split="train"):
     """
@@ -53,10 +55,33 @@ def compute_residual_images(img_set1, img_set2):
     residuals = np.abs(img_set1 - img_set2)
     return residuals
 
-def calculate_error(img_set1, img_set2):
+def calc_ssim_batched(img_set1, img_set2, batch_size=128):
+    # Initialize the SSIM metric
+    ssim = StructuralSimilarityIndexMeasure(data_range=255, reduction="none")
+    
+    # Ensure input tensors are of float32 type
+    img_set1 = torch.tensor(img_set1, dtype=torch.float32)
+    img_set2 = torch.tensor(img_set2, dtype=torch.float32)
+
+    # Calculate SSIM in batches
+    ssim_vals = []
+    for i in range(0, len(img_set1), batch_size):
+        batch_img1 = img_set1[i:i + batch_size]
+        batch_img2 = img_set2[i:i + batch_size]
+        
+        # Compute SSIM for the batch and store the result
+        ssim_batch = ssim(batch_img1, batch_img2)
+        ssim_vals.append(ssim_batch.cpu().numpy())
+    # Concatenate all batch results into a single array
+    return np.concatenate(ssim_vals)
+def calculate_composite_score(img_set1, img_set2, alpha=10, batch_size=128):
+    ssim = calc_ssim_batched(img_set1, img_set2, batch_size=batch_size)
+    ssim_rescaled = (ssim + 1) / 2
     residuals = compute_residual_images(img_set1, img_set2)
-    error = np.mean(residuals)/255
-    return error
+    MAE = residuals/255
+    MAE = np.mean(MAE, axis=(1, 2, 3))
+    composite_score = (ssim_rescaled + alpha*(1-MAE))/(1+alpha)
+    return np.mean(composite_score), composite_score
 
 # Function to visualize original images and their residuals
 def display_images_residual(img_set1, img_set2):
@@ -89,7 +114,7 @@ def display_images_residual(img_set1, img_set2):
         # Display residual images
         plt.subplot(num_images, 3, i * 3 + 3)
         plt.imshow(residual)
-        plt.title(f"Error: {errors[i]:.4f}")
+        plt.title(f"MAE: {errors[i]:.4f}")
         plt.axis("off")
     
     plt.tight_layout()
