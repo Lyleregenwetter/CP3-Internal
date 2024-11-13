@@ -119,8 +119,8 @@ def generate_wheel_description(df_slice, probabilities):
         return "an" if word and word[0].lower() in "aeiou" else "a"
     
     # Wheel adjectives
-    wheel_adjectives_1 = ["", "aerodynamic ", "sleek ", "futuristic ", "lightweight ", "precision-engineered ", "optimized "]
-    wheel_adjectives_2 = ["", "ultra-efficient ", "race-optimized ", "high-performance "]
+    wheel_adjectives_1 = ["", "aerodynamic ", "sleek ", "futuristic ", "lightweight ", "outstanding ", "superior "]
+    wheel_adjectives_2 = ["", "ultra-efficient ", "race-optimized ", "high-performance ", "precision-engineered "]
     
     # Determine wheel styles
     rim_style_front = max(["spoked", "trispoke", "disc"], key=lambda x: df_slice[f"RIM_STYLE front OHCLASS: {x.upper()}"])
@@ -159,7 +159,7 @@ def generate_wheel_description(df_slice, probabilities):
         return f"{article} {wheel_prefix}{spoke_descriptor_front}composite front wheel and disc rear wheel"
 
     elif rim_style_front == "disc" and rim_style_rear == "trispoke":
-        return f"{article} {wheel_prefix}disc front wheel and {article} composite rear wheel"
+        return f"{article} {wheel_prefix}disc front wheel and composite rear wheel"
 
     elif rim_style_front == "trispoke" and rim_style_rear == "spoked":
         return f"{article} {wheel_prefix}{spoke_descriptor_front}composite front wheel"
